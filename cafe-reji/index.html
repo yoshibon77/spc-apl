@@ -1,0 +1,1867 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>☕ RinCafe レジごっこ</title>
+
+  <style>
+    :root{
+      --accent:#BBD09D;
+      --accent2:#DDE8C8;
+      --accent3:#97B77A;
+
+      --accent-rgb:187,208,157;
+      --accent2-rgb:221,232,200;
+      --accent3-rgb:151,183,122;
+
+      --cream:#FFFDF6;
+
+      --ink:#243024;
+      --muted:#5C6B5A;
+
+      --line: rgba(36,48,36,.10);
+      --shadow: 0 14px 34px rgba(22,30,22,.14);
+
+      --good:#22c55e;
+      --bad:#ef4444;
+
+      --radius: 22px;
+      --radius2: 16px;
+    }
+
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic", sans-serif;
+      color:var(--ink);
+
+      background:
+        radial-gradient(1100px 700px at 15% 10%, rgba(var(--accent-rgb), .55), transparent 60%),
+        radial-gradient(1000px 700px at 85% 25%, rgba(var(--accent2-rgb), .65), transparent 60%),
+        radial-gradient(1100px 700px at 60% 95%, rgba(var(--accent3-rgb), .22), transparent 60%),
+        linear-gradient(135deg, var(--cream), #f6fff7);
+
+      overflow:hidden;
+      -webkit-user-select:none;
+      user-select:none;
+      touch-action: manipulation;
+    }
+
+    .app{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      padding: 12px;
+      gap: 10px;
+      box-sizing:border-box;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:stretch;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255,255,255,.80), rgba(255,255,255,.60));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      flex: 1;
+      overflow:hidden;
+    }
+
+    .titleRow{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+
+    .shopName{
+      font-size: 30px;
+      line-height:1.05;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-weight: 950;
+      letter-spacing: .4px;
+    }
+
+    .sub{
+      font-size: 12px;
+      color: var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-weight: 800;
+    }
+
+    .howto{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px 10px;
+      padding: 10px 10px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.72);
+      border: 1px dashed rgba(36,48,36,.14);
+    }
+
+    .howto .h{
+      font-size: 12px;
+      color: var(--muted);
+      flex: 1 1 260px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
+    .howto .h .label{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(var(--accent-rgb), .35);
+      border: 1px solid rgba(36,48,36,.10);
+      color: var(--ink);
+      font-weight: 950;
+      margin-bottom: 6px;
+    }
+
+    .pillRow{
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 26px rgba(22,30,22,.10);
+      font-size: 13px;
+      white-space:nowrap;
+      backdrop-filter: blur(8px);
+      font-weight: 900;
+    }
+
+    .toggle{
+      border:none;
+      background: transparent;
+      font-size: 13px;
+      cursor:pointer;
+      padding: 0;
+      color: var(--ink);
+      font-weight: 950;
+    }
+
+    .main{
+      flex: 1;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    @media (max-width: 900px){
+      .main{ grid-template-columns: 1fr; }
+      .shopName{ font-size: 28px; }
+      .pillRow{ justify-content:flex-start; }
+    }
+
+    .panel{
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.70);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    .panelHeader{
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      border-bottom: 1px dashed rgba(36,48,36,.12);
+      background: linear-gradient(180deg, rgba(var(--accent-rgb), .20), rgba(255,255,255,.18));
+      flex-wrap:wrap;
+    }
+
+    .hSmall{
+      font-size: 13px;
+      color: var(--muted);
+      display:flex;
+      gap: 8px;
+      align-items:center;
+      flex-wrap:wrap;
+      font-weight: 900;
+    }
+
+    .badge{
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid rgba(36,48,36,.10);
+      color: var(--ink);
+      font-weight: 950;
+      font-size: 12px;
+      white-space:nowrap;
+    }
+
+    .panelBody{
+      padding: 12px;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+      min-height:0;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .card{
+      border-radius: 20px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(36,48,36,.10);
+      box-shadow: 0 12px 26px rgba(22,30,22,.10);
+      padding: 14px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      cursor:pointer;
+      transition: transform .07s ease;
+      overflow:hidden;
+      min-height: 132px;
+    }
+    .card:active{ transform: translateY(1px) scale(.99); }
+
+    .card .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .icon{ font-size: 48px; line-height:1; }
+    .priceTag{
+      font-size: 14px;
+      color: var(--muted);
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(36,48,36,.10);
+      white-space:nowrap;
+      font-weight: 950;
+    }
+    .itemName{ font-size: 18px; font-weight: 950; letter-spacing: .2px; }
+    .hint{ font-size: 14px; color: var(--muted); font-weight: 900; }
+
+    .infoCard{
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(36,48,36,.10);
+      padding: 12px;
+      box-shadow: 0 10px 22px rgba(22,30,22,.08);
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .rowFlex{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:space-between;
+    }
+
+    .customer{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1 1 280px;
+    }
+
+    .avatar{
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 28px;
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), .35), rgba(255,255,255,.6));
+      border: 1px solid rgba(36,48,36,.10);
+      flex: 0 0 auto;
+    }
+
+    .custText{ display:flex; flex-direction:column; gap: 2px; min-width:0; }
+    .custText .name{
+      font-size: 22px;
+      font-weight: 950;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      letter-spacing: .2px;
+    }
+
+    .clerkBox{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex: 1 1 260px;
+      justify-content:flex-end;
+    }
+
+    .clerk{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.90);
+      border: 1px solid rgba(36,48,36,.10);
+      box-shadow: 0 10px 22px rgba(22,30,22,.08);
+      max-width: 520px;
+    }
+
+    .clerkFace{
+      font-size: 30px;
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(135deg, rgba(255,255,255,.90), rgba(var(--accent-rgb), .22));
+      border: 1px solid rgba(36,48,36,.10);
+      flex: 0 0 auto;
+    }
+
+    .clerkSay{
+      font-size: 14px;
+      font-weight: 950;
+      color: var(--ink);
+      line-height: 1.3;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .moneyBox{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .money{
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(36,48,36,.10);
+      font-size: 12px;
+      color: var(--muted);
+      white-space:nowrap;
+      font-weight: 900;
+    }
+
+    .money strong{
+      color: var(--ink);
+      font-size: 14px;
+      margin-left: 6px;
+      font-weight: 950;
+    }
+
+    .cashArea{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(36,48,36,.14);
+    }
+
+    .coinBtn{
+      border:none;
+      border-radius: 16px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(36,48,36,.12);
+      box-shadow: 0 12px 26px rgba(22,30,22,.10);
+      cursor:pointer;
+      font-size: 14px;
+      font-weight: 950;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      white-space:nowrap;
+      transition: transform .07s ease, opacity .2s ease;
+    }
+    .coinBtn:active{ transform: translateY(1px) scale(.99); }
+
+    .coinBtn.primary{
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), .40), rgba(255,255,255,.90));
+    }
+    .coinBtn.warn{
+      background: linear-gradient(135deg, rgba(245,158,11,.18), rgba(255,255,255,.85));
+    }
+
+    .trayBox{
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.90);
+      border: 1px solid rgba(36,48,36,.10);
+      padding: 12px;
+      box-shadow: 0 10px 22px rgba(22,30,22,.08);
+    }
+
+    .trayItems{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .trayRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(36,48,36,.10);
+    }
+
+    .trayRow .left{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+
+    .trayRow .emoji{
+      font-size: 20px;
+      width: 28px;
+      text-align:center;
+    }
+
+    .trayRow .label{
+      font-size: 13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-weight: 950;
+    }
+
+    .miniBtns{ display:flex; gap: 6px; align-items:center; flex-wrap:nowrap; }
+    .miniBtn{
+      border:none;
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(36,48,36,.12);
+      box-shadow: 0 8px 18px rgba(22,30,22,.08);
+      cursor:pointer;
+      font-size: 12px;
+      font-weight: 950;
+      white-space:nowrap;
+    }
+
+    .totals{ margin-top: 12px; display:flex; flex-direction:column; gap: 8px; }
+
+    .totalLine{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(36,48,36,.10);
+    }
+
+    .totalLine .k{ font-size: 12px; color: var(--muted); font-weight: 950; }
+    .totalLine .v{ font-size: 16px; font-weight: 950; }
+    .v.good{ color: #16a34a; }
+    .v.bad{ color: #dc2626; }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+
+    .btn{
+      border:none;
+      border-radius: 16px;
+      padding: 12px 12px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(36,48,36,.12);
+      box-shadow: 0 12px 26px rgba(22,30,22,.10);
+      cursor:pointer;
+      font-size: 14px;
+      font-weight: 950;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      white-space:nowrap;
+      transition: transform .07s ease, opacity .2s ease;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btnPrimary{
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), .44), rgba(255,255,255,.90));
+    }
+    .btnWarn{
+      background: linear-gradient(135deg, rgba(245,158,11,.18), rgba(255,255,255,.85));
+    }
+
+    .receiptBubble{
+      margin-top: 12px;
+      display:block;
+      position: relative;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.98);
+      border: 1px solid rgba(36,48,36,.16);
+      box-shadow: 0 16px 36px rgba(0,0,0,.16);
+    }
+
+    .receiptHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+
+    .receiptTitle{ font-weight: 950; font-size: 16px; letter-spacing: .3px; }
+    .receiptMini{ font-size: 12px; color: var(--muted); font-weight: 900; margin-top: 2px; line-height: 1.35; }
+
+    .receiptPaper{
+      border-radius: 16px;
+      padding: 14px 14px;
+      background: repeating-linear-gradient(
+        180deg,
+        rgba(36,48,36,.05),
+        rgba(36,48,36,.05) 2px,
+        rgba(255,255,255,.0) 2px,
+        rgba(255,255,255,.0) 16px
+      );
+      border: 1px dashed rgba(36,48,36,.22);
+      font-size: 15px;
+      line-height: 1.85;
+    }
+
+    .receiptLine{
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      font-weight: 900;
+    }
+    .receiptLine .left{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    .receiptSum{
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(36,48,36,.20);
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      font-weight: 950;
+      font-size: 15px;
+    }
+    .receiptSum .row{ display:flex; justify-content:space-between; gap: 10px; }
+
+    .stampCard{
+      margin-top: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(36,48,36,.10);
+      box-shadow: 0 10px 22px rgba(22,30,22,.08);
+      padding: 12px;
+    }
+
+    .stampHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+
+    .stampTitle{
+      font-weight: 950;
+      font-size: 14px;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+
+    .stampMeta{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 900;
+      white-space:nowrap;
+    }
+
+    .stampGrid{
+      margin-top: 10px;
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .stamp{
+      border-radius: 14px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(36,48,36,.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 6px;
+      font-size: 18px;
+      font-weight: 950;
+      min-height: 44px;
+    }
+
+    .stamp.on{
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), .55), rgba(255,255,255,.90));
+      border: 1px solid rgba(22,160,70,.20);
+    }
+
+    .gift{
+      display:none;
+      margin-top: 10px;
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.25);
+      font-weight: 950;
+    }
+    .gift.show{ display:block; }
+
+    .toast{
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 14px;
+      margin: 0 auto;
+      max-width: 980px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.78);
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.3;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events:none;
+      box-shadow: 0 14px 28px rgba(0,0,0,.22);
+      z-index: 120;
+      font-weight: 900;
+    }
+    .toast.show{ opacity: 1; transform: translateY(0); }
+
+    .sparkle{
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      pointer-events:none;
+      z-index: 60;
+      animation: fly .75s ease-out forwards;
+      opacity: .95;
+    }
+    @keyframes fly{
+      0% { transform: translate(0,0) scale(.8); opacity: 0; }
+      15%{ opacity: 1; }
+      100%{ transform: translate(var(--dx), var(--dy)) scale(1.15); opacity: 0; }
+    }
+
+    .modalBack{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.28);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 200;
+      padding: 14px;
+    }
+    .modalBack.show{ display:flex; }
+
+    .modal{
+      width: min(540px, 100%);
+      border-radius: 22px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(36,48,36,.14);
+      box-shadow: 0 18px 44px rgba(0,0,0,.22);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+    .modalHead{
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      border-bottom: 1px dashed rgba(36,48,36,.16);
+      background: linear-gradient(180deg, rgba(var(--accent-rgb), .20), rgba(255,255,255,.20));
+    }
+    .modalHead .t{ font-weight: 950; font-size: 14px; }
+    .modalBody{ padding: 14px; display:flex; flex-direction:column; gap: 12px; }
+    .field{ display:flex; flex-direction:column; gap: 6px; }
+    .field label{ font-size: 12px; color: var(--muted); font-weight: 900; }
+
+    .inp{
+      border-radius: 16px;
+      padding: 12px 12px;
+      border: 1px solid rgba(36,48,36,.18);
+      background: rgba(255,255,255,.95);
+      font-size: 14px;
+      font-weight: 900;
+      outline: none;
+    }
+
+    .themeRow{ display:flex; gap: 10px; flex-wrap:wrap; }
+    .themeBtn{
+      border:none;
+      cursor:pointer;
+      border-radius: 16px;
+      padding: 10px 12px;
+      font-weight: 950;
+      font-size: 13px;
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(36,48,36,.14);
+      box-shadow: 0 10px 22px rgba(22,30,22,.10);
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+    .themeDot{
+      width: 14px; height: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.12);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.6);
+    }
+    .themeBtn.active{
+      outline: 3px solid rgba(var(--accent-rgb), .45);
+    }
+    .modalFoot{
+      padding: 12px 14px;
+      border-top: 1px dashed rgba(36,48,36,.16);
+      display:flex;
+      gap: 10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+
+    .srOnly{
+      position:absolute;
+      width:1px;height:1px;
+      padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0,0,0,0);
+      white-space:nowrap;border:0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="titleRow">
+          <div>
+            <div class="shopName" id="shopName">☕ RinCafe</div>
+            <div class="sub">かわいいメニューを えらんで、コインを入れて おかいけい 🧾✨</div>
+          </div>
+        </div>
+
+        <div class="howto">
+          <div class="h">
+            <div class="label">🎯 あそび方</div>
+            1 メニューをタップでピッ♪ 🧁  
+            2 コインを 100円／500円 でいれる 🪙  
+            3 おかいけいで レシート＆ポイント🧾✨
+          </div>
+          <div class="h">
+            <div class="label">🌿 もくてき</div>
+            えらぶ＋たしざん😊  
+            おつりまで分かったら すごい！✨
+          </div>
+        </div>
+      </div>
+
+      <div class="pillRow">
+        <div class="pill">
+          <span>⚙️</span>
+          <button class="toggle" id="settingsBtn" type="button">せってい</button>
+        </div>
+        <div class="pill">
+          <span>🔊</span>
+          <button class="toggle" id="soundBtn" type="button">おと ON</button>
+        </div>
+        <div class="pill">
+          <span>📈</span>
+          <span id="dailyTxt">本日売上 0円</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <section class="panel">
+        <div class="panelHeader">
+          <div class="hSmall">🧁 メニュー <span class="badge">タップで トレーへ</span></div>
+          <div class="hSmall"><span class="badge" id="themeBadge">テーマ：ピスタチオ🍃</span></div>
+        </div>
+
+        <div class="panelBody">
+          <div class="infoCard">
+            <div class="rowFlex">
+              <div class="customer">
+                <div class="avatar" id="avatar">🐰</div>
+                <div class="custText">
+                  <div class="name" id="custName">むぎちゃん</div>
+                </div>
+              </div>
+
+              <div class="clerkBox">
+                <div class="clerk" title="てんいんさん">
+                  <div class="clerkFace" id="clerkFace">😊</div>
+                  <div class="clerkSay" id="clerkSay">いらっしゃいませ〜♪</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rowFlex">
+              <div class="moneyBox">
+                <div class="money">いまの ごうけい <strong id="trayTotalTop">0</strong> 円</div>
+                <div class="money">いれたおかね <strong id="paidAmtTop">0</strong> 円</div>
+              </div>
+              <div class="moneyBox">
+                <div class="money">本日 お会計 <strong id="dailyCount">0</strong> 回</div>
+                <div class="money">本日 pt <strong id="dailyPts">0</strong> pt</div>
+              </div>
+            </div>
+
+            <div class="cashArea">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="coinBtn primary" id="coin100" type="button">🪙 100円</button>
+                <button class="coinBtn primary" id="coin500" type="button">🪙 500円</button>
+                <button class="coinBtn warn" id="cashClear" type="button">🧼 もどす</button>
+              </div>
+
+              <div class="moneyBox">
+                <div class="money">たりる？ <strong id="enoughTxt">まだ</strong></div>
+                <div class="money">おつり <strong id="changeTop">0</strong> 円</div>
+              </div>
+            </div>
+
+            <div class="receiptBubble" id="receiptBubble">
+              <div class="receiptHead">
+                <div>
+                  <div class="receiptTitle">🧾 レシート</div>
+                  <div class="receiptMini" id="receiptMini">100円で10ポイントつくよ✨</div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="coinBtn" id="saveReceiptImg" type="button">📸 レシートを写真で保存</button>
+                </div>
+              </div>
+              <div class="receiptPaper" id="receiptPaper">
+                まずはメニューをタップしてね😊
+              </div>
+
+              <div class="stampCard">
+                <div class="stampHead">
+                  <div class="stampTitle">🎟️ スタンプカード（10ptで1スタンプ）</div>
+                  <div class="stampMeta">たまったスタンプ <span id="stampNow">0</span>/10　合計 <span id="totalPts">0</span>pt</div>
+                </div>
+                <div class="stampGrid" id="stampGrid"></div>
+                <div class="gift" id="giftBox">🎁 おめでとう！10スタンプ達成！ごほうびタイム✨</div>
+              </div>
+
+              <div class="srOnly" aria-live="polite" id="ariaLive"></div>
+            </div>
+          </div>
+
+          <div class="grid" id="menuGrid"></div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="panelHeader">
+          <div class="hSmall">🧺 トレー <span class="badge">±で かず</span></div>
+          <div class="hSmall"><span class="badge" id="helperBadge">たのしく いこう😊</span></div>
+        </div>
+
+        <div class="panelBody">
+          <div class="trayBox">
+            <div class="rowFlex">
+              <div style="font-weight:950;">いまの トレー</div>
+              <div style="font-size:12px; color:var(--muted); font-weight:900;">メニューを えらんでね</div>
+            </div>
+
+            <div class="trayItems" id="trayItems"></div>
+
+            <div class="totals">
+              <div class="totalLine">
+                <div class="k">ごうけい</div>
+                <div class="v"><span id="trayTotal">0</span> 円</div>
+              </div>
+              <div class="totalLine">
+                <div class="k">いれたおかね</div>
+                <div class="v"><span id="paidAmt2">0</span> 円</div>
+              </div>
+              <div class="totalLine" id="changeLine" style="display:none;">
+                <div class="k">おつり</div>
+                <div class="v good"><span id="changeAmt">0</span> 円</div>
+              </div>
+              <div class="totalLine" id="lackLine" style="display:none;">
+                <div class="k">たりない</div>
+                <div class="v bad"><span id="lackAmt">0</span> 円</div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn btnPrimary" id="checkoutBtn" type="button">🧾 おかいけい</button>
+              <button class="btn btnPrimary" id="newBtn" type="button">🧑‍🍳 つぎの おきゃくさん</button>
+              <button class="btn btnWarn" id="resetBtn" type="button">🧼 トレー クリア</button>
+              <button class="btn btnWarn" id="dailyResetBtn" type="button">📅 本日データ リセット</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <div class="modalBack" id="modalBack" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="せってい">
+      <div class="modalHead">
+        <div class="t">⚙️ せってい</div>
+        <button class="toggle" id="closeSettings" type="button">とじる</button>
+      </div>
+      <div class="modalBody">
+        <div class="field">
+          <label>🏷️ おみせの なまえ（デフォルト：RinCafe）</label>
+          <input class="inp" id="shopNameInput" type="text" maxlength="20" placeholder="RinCafe" />
+        </div>
+
+        <div class="field">
+          <label>🧒 おかいものする ひと（デフォルト：むぎちゃん）</label>
+          <input class="inp" id="buyerNameInput" type="text" maxlength="20" placeholder="むぎちゃん" />
+        </div>
+
+        <div class="field">
+          <label>🎨 おみせの いろ（テーマ）</label>
+          <div class="themeRow">
+            <button class="themeBtn" id="themePista" type="button">
+              <span class="themeDot" style="background:#BBD09D"></span> ピスタチオ🍃
+            </button>
+            <button class="themeBtn" id="themePink" type="button">
+              <span class="themeDot" style="background:#FF9BC7"></span> ピンク🌸
+            </button>
+            <button class="themeBtn" id="themePurple" type="button">
+              <span class="themeDot" style="background:#B59BFF"></span> むらさき🍇
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>🔈 音のヒント</label>
+          <div style="font-size:12px;color:var(--muted);font-weight:900;line-height:1.5;">
+            最初の1回タップで音が出やすくなるよ🔊  
+            スマホが消音モードだと鳴らないことがあるよ😊
+          </div>
+        </div>
+      </div>
+      <div class="modalFoot">
+        <button class="btn btnPrimary" id="saveSettings" type="button">保存する✨</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const menu = [
+        {id:"coffee",  emoji:"☕", name:"コーヒー",      price:200, hint:"いいにおい"},
+        {id:"cocoa",   emoji:"🧋", name:"ココア",        price:180, hint:"あまくて ほっこり"},
+        {id:"pudding", emoji:"🍮", name:"プリン",        price:220, hint:"ぷるぷる"},
+        {id:"donut",   emoji:"🍩", name:"ドーナツ",      price:160, hint:"さくふわ"},
+        {id:"cake1",   emoji:"🍰", name:"いちごケーキ",  price:280, hint:"いちご たっぷり"},
+        {id:"cake2",   emoji:"🍫", name:"チョコケーキ",  price:300, hint:"こくうま"},
+        {id:"cake3",   emoji:"🧀", name:"チーズケーキ",  price:290, hint:"まろやか"}
+      ];
+
+      const customers = [
+        {avatar:"🐰", say:"すきなの えらんでね〜♪"},
+        {avatar:"🐻", say:"あまいの だいすき！"},
+        {avatar:"🐱", say:"ゆっくり たべたいな"},
+        {avatar:"🦊", say:"おすすめ ある？"},
+        {avatar:"🐼", say:"かわいいの ちょうだい♪"},
+        {avatar:"🐶", say:"レジ できる？ すごいね！"}
+      ];
+
+      const themes = {
+        pista:  {name:"ピスタチオ🍃", accent:"#BBD09D", accent2:"#DDE8C8", accent3:"#97B77A", cream:"#FFFDF6", rgb:"187,208,157", rgb2:"221,232,200", rgb3:"151,183,122"},
+        pink:   {name:"ピンク🌸",     accent:"#FF9BC7", accent2:"#FFD3E6", accent3:"#FF6FB3", cream:"#FFF7FB", rgb:"255,155,199", rgb2:"255,211,230", rgb3:"255,111,179"},
+        purple: {name:"むらさき🍇",   accent:"#B59BFF", accent2:"#E1D7FF", accent3:"#8A6DFF", cream:"#FBFAFF", rgb:"181,155,255", rgb2:"225,215,255", rgb3:"138,109,255"}
+      };
+
+      const STORE_KEY = "rinCafe_register_v5";
+      const DAILY_KEY = "rinCafe_daily_v1";
+      const POINTS_KEY = "rinCafe_points_v1";
+
+      let tray = {};
+      let paid = 0;
+      let soundOn = true;
+
+      let buyerName = "むぎちゃん";
+      let shopName = "RinCafe";
+      let themeKey = "pista";
+
+      let totalPoints = 0;
+      let dailySales = 0;
+      let dailyCount = 0;
+      let dailyPoints = 0;
+
+      const menuGrid = document.getElementById("menuGrid");
+      const trayItems = document.getElementById("trayItems");
+
+      const trayTotalEl = document.getElementById("trayTotal");
+      const trayTotalTopEl = document.getElementById("trayTotalTop");
+
+      const paidAmtTopEl = document.getElementById("paidAmtTop");
+      const paidAmt2El = document.getElementById("paidAmt2");
+
+      const enoughTxt = document.getElementById("enoughTxt");
+      const changeTopEl = document.getElementById("changeTop");
+
+      const helperBadge = document.getElementById("helperBadge");
+
+      const changeLine = document.getElementById("changeLine");
+      const changeAmtEl = document.getElementById("changeAmt");
+      const lackLine = document.getElementById("lackLine");
+      const lackAmtEl = document.getElementById("lackAmt");
+
+      const receiptPaper = document.getElementById("receiptPaper");
+      const receiptMini = document.getElementById("receiptMini");
+      const saveReceiptImgBtn = document.getElementById("saveReceiptImg");
+
+      const stampGrid = document.getElementById("stampGrid");
+      const stampNowEl = document.getElementById("stampNow");
+      const totalPtsEl = document.getElementById("totalPts");
+      const giftBox = document.getElementById("giftBox");
+
+      const avatarEl = document.getElementById("avatar");
+      const custNameEl = document.getElementById("custName");
+
+      const clerkFaceEl = document.getElementById("clerkFace");
+      const clerkSayEl = document.getElementById("clerkSay");
+
+      const soundBtn = document.getElementById("soundBtn");
+      const themeBadge = document.getElementById("themeBadge");
+      const shopNameEl = document.getElementById("shopName");
+
+      const dailyTxt = document.getElementById("dailyTxt");
+      const dailyCountEl = document.getElementById("dailyCount");
+      const dailyPtsEl = document.getElementById("dailyPts");
+
+      const coin100 = document.getElementById("coin100");
+      const coin500 = document.getElementById("coin500");
+      const cashClear = document.getElementById("cashClear");
+
+      const checkoutBtn = document.getElementById("checkoutBtn");
+      const newBtn = document.getElementById("newBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const dailyResetBtn = document.getElementById("dailyResetBtn");
+
+      const toast = document.getElementById("toast");
+      const ariaLive = document.getElementById("ariaLive");
+
+      const settingsBtn = document.getElementById("settingsBtn");
+      const modalBack = document.getElementById("modalBack");
+      const closeSettings = document.getElementById("closeSettings");
+      const saveSettings = document.getElementById("saveSettings");
+      const shopNameInput = document.getElementById("shopNameInput");
+      const buyerNameInput = document.getElementById("buyerNameInput");
+
+      const themePista = document.getElementById("themePista");
+      const themePink = document.getElementById("themePink");
+      const themePurple = document.getElementById("themePurple");
+
+      function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+      function totalOf(map){
+        let sum = 0;
+        for(const [id,qty] of Object.entries(map)){
+          const it = menu.find(x=>x.id===id);
+          sum += it.price * qty;
+        }
+        return sum;
+      }
+
+      function showToast(msg){
+        toast.textContent = msg;
+        toast.classList.add("show");
+        ariaLive.textContent = msg;
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(()=>toast.classList.remove("show"), 1200);
+      }
+
+      let audioCtx = null;
+      function ensureAudio(){
+        if(!audioCtx){
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new Ctx();
+        }
+        if(audioCtx.state === "suspended") audioCtx.resume();
+      }
+
+      function playTone({type="sine", start=440, end=440, dur=0.10, gain=0.18}){
+        if(!soundOn) return;
+        ensureAudio();
+
+        const t0 = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        const comp = audioCtx.createDynamicsCompressor();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(start, t0);
+        if(end && end !== start){
+          osc.frequency.exponentialRampToValueAtTime(Math.max(1,end), t0 + dur);
+        }
+
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(gain, t0 + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+        comp.threshold.setValueAtTime(-26, t0);
+        comp.knee.setValueAtTime(22, t0);
+        comp.ratio.setValueAtTime(8, t0);
+        comp.attack.setValueAtTime(0.003, t0);
+        comp.release.setValueAtTime(0.12, t0);
+
+        osc.connect(g);
+        g.connect(comp);
+        comp.connect(audioCtx.destination);
+
+        osc.start(t0);
+        osc.stop(t0 + dur + 0.02);
+      }
+
+      function sfxTap(){ playTone({type:"triangle", start:520, end:260, dur:0.07, gain:0.14}); }
+      function sfxScan(){
+        if(!soundOn) return;
+        ensureAudio();
+        playTone({type:"square", start:1650, end:1650, dur:0.06, gain:0.24});
+        setTimeout(()=>playTone({type:"square", start:2200, end:2200, dur:0.065, gain:0.24}), 70);
+      }
+      function sfxGood(){
+        playTone({type:"sine", start:880, end:1320, dur:0.10, gain:0.16});
+        setTimeout(()=>playTone({type:"sine", start:660, end:990, dur:0.08, gain:0.14}), 80);
+      }
+      function sfxOops(){ playTone({type:"square", start:220, end:160, dur:0.10, gain:0.14}); }
+
+      let cachedVoices = [];
+      function loadVoices(){
+        try{ cachedVoices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : []; }
+        catch(e){ cachedVoices = []; }
+      }
+      if("speechSynthesis" in window){
+        loadVoices();
+        window.speechSynthesis.onvoiceschanged = () => loadVoices();
+      }
+
+      function pickCuteJaVoice(){
+        const ja = (cachedVoices || []).filter(v => (v.lang || "").toLowerCase().startsWith("ja"));
+        if(ja.length === 0) return null;
+        const preferWords = ["female","woman","kyoko","haruka","yuna","sayaka","nanami","mizuki","google 日本語","japanese"];
+        const scored = ja.map(v=>{
+          const name = (v.name || "").toLowerCase();
+          let score = 0;
+          for(const w of preferWords){ if(name.includes(w)) score += 3; }
+          if(v.default) score += 1;
+          return {v, score};
+        }).sort((a,b)=> b.score - a.score);
+        return scored[0]?.v || ja[0];
+      }
+
+      function speakThanks(){
+        if(!soundOn) return;
+        if(!("speechSynthesis" in window)) return;
+
+        const u = new SpeechSynthesisUtterance("ありがとうございました〜♡");
+        u.lang = "ja-JP";
+        u.rate = 0.95;
+        u.pitch = 1.75;
+        u.volume = 1.0;
+
+        const cute = pickCuteJaVoice();
+        if(cute) u.voice = cute;
+
+        try{ window.speechSynthesis.cancel(); }catch(e){}
+        window.speechSynthesis.speak(u);
+      }
+
+      function sparkleColors(){
+        const a = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#BBD09D";
+        const b = getComputedStyle(document.documentElement).getPropertyValue("--accent2").trim() || "#DDE8C8";
+        const c = getComputedStyle(document.documentElement).getPropertyValue("--accent3").trim() || "#97B77A";
+        return ["#FFFFFF", "#F7F1D6", a, b, c];
+      }
+
+      function sparkleAt(x,y){
+        const s = document.createElement("div");
+        s.className = "sparkle";
+        const colors = sparkleColors();
+        s.style.background = colors[Math.floor(Math.random()*colors.length)];
+        s.style.left = x + "px";
+        s.style.top = y + "px";
+        s.style.setProperty("--dx", (Math.random()*140 - 70) + "px");
+        s.style.setProperty("--dy", (Math.random()*-180 - 60) + "px");
+        document.body.appendChild(s);
+        setTimeout(()=> s.remove(), 820);
+      }
+      function sparkleBurst(x,y){
+        for(let i=0;i<18;i++){
+          sparkleAt(x + (Math.random()*40-20), y + (Math.random()*40-20));
+        }
+      }
+      function sparkleAtCenter(el){
+        const r = el.getBoundingClientRect();
+        sparkleBurst(r.left + r.width/2, r.top + r.height/2);
+      }
+
+      function clerkSay(text, face="😊"){
+        clerkFaceEl.textContent = face;
+        clerkSayEl.textContent = text;
+      }
+
+      function escapeHtml(s){
+        return String(s)
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
+
+      function renderMenu(){
+        menuGrid.innerHTML = "";
+        for(const it of menu){
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <div class="top">
+              <div class="icon">${it.emoji}</div>
+              <div class="priceTag">${it.price}円</div>
+            </div>
+            <div class="itemName">${it.name}</div>
+            <div class="hint">${it.hint}</div>
+          `;
+          card.addEventListener("click", ()=>{
+            sfxScan();
+            tray[it.id] = (tray[it.id]||0) + 1;
+            clerkSay("ピッ♪ いれたよ〜✨", "😊");
+            renderAll();
+            sparkleAtCenter(card);
+          });
+          menuGrid.appendChild(card);
+        }
+      }
+
+      function renderTray(){
+        trayItems.innerHTML = "";
+        const ids = Object.keys(tray).filter(id => tray[id] > 0);
+
+        if(ids.length === 0){
+          const empty = document.createElement("div");
+          empty.style.padding = "14px 10px";
+          empty.style.borderRadius = "14px";
+          empty.style.background = "rgba(255,255,255,.88)";
+          empty.style.border = "1px solid rgba(36,48,36,.10)";
+          empty.style.color = "var(--muted)";
+          empty.style.fontSize = "12px";
+          empty.style.fontWeight = "950";
+          empty.textContent = "まだ なにも ないよ。メニューを タップしてね😊";
+          trayItems.appendChild(empty);
+          return;
+        }
+
+        for(const id of ids){
+          const it = menu.find(x=>x.id===id);
+          const qty = tray[id];
+
+          const row = document.createElement("div");
+          row.className = "trayRow";
+          row.innerHTML = `
+            <div class="left">
+              <div class="emoji">${it.emoji}</div>
+              <div class="label">${it.name}</div>
+            </div>
+            <div class="miniBtns">
+              <button class="miniBtn" data-act="minus">−</button>
+              <div style="min-width:30px;text-align:center;font-weight:950;">${qty}</div>
+              <button class="miniBtn" data-act="plus">＋</button>
+              <button class="miniBtn" data-act="del">🗑️</button>
+            </div>
+          `;
+
+          row.querySelector('[data-act="minus"]').addEventListener("click",(e)=>{
+            e.stopPropagation();
+            sfxTap();
+            tray[id] = Math.max(0, (tray[id]||0)-1);
+            if(tray[id]===0) delete tray[id];
+            clerkSay("へらしたよ〜🙂", "🙂");
+            renderAll();
+          });
+          row.querySelector('[data-act="plus"]').addEventListener("click",(e)=>{
+            e.stopPropagation();
+            sfxScan();
+            tray[id] = (tray[id]||0)+1;
+            clerkSay("ピッ♪ ふやしたよ✨", "😊");
+            renderAll();
+          });
+          row.querySelector('[data-act="del"]').addEventListener("click",(e)=>{
+            e.stopPropagation();
+            sfxTap();
+            delete tray[id];
+            clerkSay("けしたよ〜🧼", "🙂");
+            renderAll();
+          });
+
+          trayItems.appendChild(row);
+        }
+      }
+
+      function updateTopStatus(total){
+        document.getElementById("trayTotal").textContent = String(total);
+        document.getElementById("trayTotalTop").textContent = String(total);
+
+        paidAmtTopEl.textContent = String(paid);
+        paidAmt2El.textContent = String(paid);
+
+        const ok = (total > 0) && (paid >= total);
+        enoughTxt.textContent = (total === 0) ? "まだ" : (ok ? "OK" : "たりない");
+        enoughTxt.style.color = (total === 0) ? "var(--muted)" : (ok ? "var(--good)" : "var(--bad)");
+
+        const change = Math.max(0, paid - total);
+        changeTopEl.textContent = String(change);
+
+        if(total === 0){
+          helperBadge.textContent = "まずは メニューを えらんでね😊";
+        }else if(paid === 0){
+          helperBadge.textContent = "つぎは コインを いれてみよう🪙";
+        }else if(paid < total){
+          helperBadge.textContent = "もうすこし コインを いれよう😊";
+        }else{
+          helperBadge.textContent = "OK！ おかいけい しよう✨";
+        }
+
+        changeLine.style.display = "none";
+        lackLine.style.display = "none";
+      }
+
+      function calcPoints(totalYen){
+        return Math.floor(totalYen / 100) * 10;
+      }
+
+      function buildReceiptPreview(){
+        const total = totalOf(tray);
+        const ids = Object.keys(tray).filter(id => tray[id] > 0);
+
+        if(ids.length === 0){
+          receiptPaper.innerHTML = "まずはメニューをタップしてね😊";
+          return;
+        }
+
+        const lines = [];
+        for(const id of ids){
+          const it = menu.find(x=>x.id===id);
+          lines.push({name: `${it.emoji} ${it.name} ×${tray[id]}`, yen: it.price * tray[id]});
+        }
+
+        let html = "";
+        for(const l of lines){
+          html += `<div class="receiptLine"><span class="left">${escapeHtml(l.name)}</span><span>${l.yen}円</span></div>`;
+        }
+
+        const earned = calcPoints(total);
+        const change = Math.max(0, paid - total);
+
+        html += `
+          <div class="receiptSum">
+            <div class="row"><span>ポイント</span><span>100円で10pt ✨</span></div>
+            <div class="row"><span>今回の獲得pt</span><span>${earned}pt</span></div>
+            <div class="row"><span>ごうけい</span><span>${total}円</span></div>
+            <div class="row"><span>おあずかり</span><span>${paid}円</span></div>
+            <div class="row"><span>おつり</span><span>${change}円</span></div>
+          </div>
+        `;
+        receiptPaper.innerHTML = html;
+      }
+
+      function renderStampCard(){
+        const stamps = Math.floor(totalPoints / 10);
+        const inCard = stamps % 10;
+
+        stampNowEl.textContent = String(inCard);
+        totalPtsEl.textContent = String(totalPoints);
+
+        stampGrid.innerHTML = "";
+        for(let i=0;i<10;i++){
+          const d = document.createElement("div");
+          d.className = "stamp" + (i < inCard ? " on" : "");
+          d.textContent = (i < inCard) ? "⭐" : "○";
+          stampGrid.appendChild(d);
+        }
+      }
+
+      function renderDaily(){
+        dailyTxt.textContent = "本日売上 " + String(dailySales) + "円";
+        dailyCountEl.textContent = String(dailyCount);
+        dailyPtsEl.textContent = String(dailyPoints);
+      }
+
+      function renderAll(){
+        const total = totalOf(tray);
+        renderTray();
+        updateTopStatus(total);
+        buildReceiptPreview();
+        renderStampCard();
+        renderDaily();
+      }
+
+      function saveState(){
+        localStorage.setItem(POINTS_KEY, JSON.stringify({totalPoints}));
+        localStorage.setItem(DAILY_KEY, JSON.stringify({dailySales, dailyCount, dailyPoints}));
+      }
+
+      function loadState(){
+        try{
+          const p = JSON.parse(localStorage.getItem(POINTS_KEY) || "{}");
+          totalPoints = Number(p.totalPoints || 0);
+
+          const d = JSON.parse(localStorage.getItem(DAILY_KEY) || "{}");
+          dailySales = Number(d.dailySales || 0);
+          dailyCount = Number(d.dailyCount || 0);
+          dailyPoints = Number(d.dailyPoints || 0);
+        }catch(e){
+          totalPoints = 0;
+          dailySales = 0;
+          dailyCount = 0;
+          dailyPoints = 0;
+        }
+      }
+
+      function applyTheme(key){
+        themeKey = key;
+        const th = themes[key] || themes.pista;
+
+        const r = document.documentElement.style;
+        r.setProperty("--accent", th.accent);
+        r.setProperty("--accent2", th.accent2);
+        r.setProperty("--accent3", th.accent3);
+        r.setProperty("--cream", th.cream);
+
+        r.setProperty("--accent-rgb", th.rgb);
+        r.setProperty("--accent2-rgb", th.rgb2);
+        r.setProperty("--accent3-rgb", th.rgb3);
+
+        themeBadge.textContent = "テーマ：" + th.name;
+
+        themePista.classList.toggle("active", key==="pista");
+        themePink.classList.toggle("active", key==="pink");
+        themePurple.classList.toggle("active", key==="purple");
+      }
+
+      function applyShopName(name){
+        shopName = (name || "").trim() || "RinCafe";
+        shopNameEl.textContent = "☕ " + shopName;
+        document.title = "☕ " + shopName + " レジごっこ";
+      }
+
+      function applyBuyerName(name){
+        buyerName = (name || "").trim() || "むぎちゃん";
+        custNameEl.textContent = buyerName;
+      }
+
+      function saveSettingsToStore(){
+        localStorage.setItem(STORE_KEY, JSON.stringify({
+          shopName, buyerName, themeKey
+        }));
+      }
+
+      function loadSettings(){
+        try{
+          const raw = localStorage.getItem(STORE_KEY);
+          if(!raw) return {shopName:"RinCafe", buyerName:"むぎちゃん", themeKey:"pista"};
+          const obj = JSON.parse(raw);
+          return {
+            shopName: obj.shopName || "RinCafe",
+            buyerName: obj.buyerName || "むぎちゃん",
+            themeKey: obj.themeKey || "pista"
+          };
+        }catch(e){
+          return {shopName:"RinCafe", buyerName:"むぎちゃん", themeKey:"pista"};
+        }
+      }
+
+      function openSettings(){
+        const cur = loadSettings();
+        shopNameInput.value = cur.shopName;
+        buyerNameInput.value = cur.buyerName;
+        applyTheme(cur.themeKey);
+
+        modalBack.classList.add("show");
+        modalBack.setAttribute("aria-hidden","false");
+        showToast("せっていを ひらいたよ⚙️");
+      }
+
+      function closeSettingsModal(){
+        modalBack.classList.remove("show");
+        modalBack.setAttribute("aria-hidden","true");
+      }
+
+      function newCustomer(){
+        const c = pick(customers);
+        avatarEl.textContent = c.avatar;
+        applyBuyerName(buyerName);
+
+        tray = {};
+        paid = 0;
+
+        clerkSay("いらっしゃいませ〜♪", "😊");
+        showToast("すきなの えらんでね😊");
+        renderAll();
+      }
+
+      function clearTray(){
+        tray = {};
+        renderAll();
+        clerkSay("トレーを きれいにしたよ🧼", "🙂");
+        showToast("トレーを きれいにしたよ🧼");
+      }
+
+      function addCash(amount){
+        sfxTap();
+        paid = Math.min(paid + amount, 10000);
+        clerkSay(amount + "円 うけとったよ🪙", "😊");
+        renderAll();
+      }
+
+      function cashBack(){
+        sfxTap();
+        paid = 0;
+        clerkSay("コイン もどしたよ🧼", "🙂");
+        renderAll();
+        showToast("コインを もどしたよ🧼");
+      }
+
+      function checkout(){
+        const total = totalOf(tray);
+        if(total === 0){
+          sfxOops();
+          clerkSay("まずは メニューをえらんでね😊", "🙂");
+          showToast("なにか えらんでから おかいけい してね😊");
+          return;
+        }
+
+        if(paid < total){
+          const lack = total - paid;
+          lackAmtEl.textContent = String(lack);
+          lackLine.style.display = "";
+          changeLine.style.display = "none";
+          sfxOops();
+          clerkSay("あと " + lack + "円 たりないよ💦", "😮");
+          showToast("あと " + String(lack) + "円 たりないよ😊");
+          return;
+        }
+
+        const change = paid - total;
+        changeAmtEl.textContent = String(change);
+        changeLine.style.display = "";
+        lackLine.style.display = "none";
+
+        const now = new Date();
+        const stamp = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,"0")}/${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+        receiptMini.textContent = `100円で10ポイント✨　${shopName}　${buyerName}　${stamp}`;
+
+        const earned = calcPoints(total);
+        const before = Math.floor(totalPoints / 10) % 10;
+
+        totalPoints += earned;
+        dailyPoints += earned;
+        dailySales += total;
+        dailyCount += 1;
+
+        saveState();
+
+        sfxGood();
+        speakThanks();
+
+        clerkSay("ありがとうございました〜♡", "😊");
+        showToast("おかいけい できたよ🧾✨");
+
+        renderAll();
+
+        const nowCard = Math.floor(totalPoints / 10) % 10;
+        if(before !== 0 && nowCard === 0){
+          giftBox.classList.add("show");
+          clerkSay("🎁 10スタンプ たまった！ごほうび〜✨", "😍");
+          showToast("🎁 10スタンプ達成！おめでとう✨");
+          sparkleBurst(window.innerWidth*0.5, window.innerHeight*0.38);
+          setTimeout(()=> giftBox.classList.remove("show"), 2400);
+        }else if(earned > 0){
+          clerkSay("今回 " + earned + "pt！いいね〜✨", "😊");
+        }
+
+        paid = 0;
+        tray = {};
+        renderAll();
+      }
+
+      function dailyReset(){
+        sfxTap();
+        dailySales = 0;
+        dailyCount = 0;
+        dailyPoints = 0;
+        saveState();
+        clerkSay("本日データ 0にしたよ📅", "🙂");
+        showToast("本日データをリセットしたよ📅");
+        renderAll();
+      }
+
+      function makeReceiptPng(){
+        const total = totalOf(tray);
+        const ids = Object.keys(tray).filter(id => tray[id] > 0);
+
+        const now = new Date();
+        const stamp = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,"0")}/${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+        const change = Math.max(0, paid - total);
+        const earned = calcPoints(total);
+
+        const lines = [];
+        lines.push(`☕ ${shopName}　🧒 ${buyerName}`);
+        lines.push(`日時 ${stamp}`);
+        lines.push(`100円で10ポイント`);
+        lines.push(`今回の獲得pt ${earned}pt`);
+        lines.push(`----------------------`);
+
+        if(ids.length === 0){
+          lines.push(`まだ おかいもの してないよ😊`);
+        }else{
+          for(const id of ids){
+            const it = menu.find(x=>x.id===id);
+            const qty = tray[id];
+            lines.push(`${it.emoji} ${it.name} x${qty}  ${it.price * qty}円`);
+          }
+          lines.push(`----------------------`);
+          lines.push(`合計 ${total}円`);
+          lines.push(`おあずかり ${paid}円`);
+          lines.push(`おつり ${change}円`);
+        }
+
+        const W = 900;
+        const H = 620;
+        const canvas = document.createElement("canvas");
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext("2d");
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0,0,W,H);
+
+        ctx.strokeStyle = "rgba(36,48,36,.18)";
+        ctx.lineWidth = 4;
+        roundRect(ctx, 24, 24, W-48, H-48, 26);
+        ctx.stroke();
+
+        ctx.fillStyle = "#243024";
+        ctx.font = "900 36px system-ui, -apple-system, Noto Sans JP";
+        ctx.fillText("🧾 レシート", 56, 88);
+
+        ctx.fillStyle = "#5C6B5A";
+        ctx.font = "900 22px system-ui, -apple-system, Noto Sans JP";
+        ctx.fillText("写真で保存できるよ📸", 56, 120);
+
+        ctx.fillStyle = "#243024";
+        ctx.font = "900 24px system-ui, -apple-system, Noto Sans JP";
+
+        let y = 170;
+        const lh = 36;
+        for(const s of lines){
+          ctx.fillText(s, 56, y);
+          y += lh;
+          if(y > H - 70) break;
+        }
+
+        ctx.fillStyle = "rgba(" + themes[themeKey].rgb + ", .25)";
+        ctx.fillRect(56, H-120, W-112, 64);
+
+        ctx.fillStyle = "#243024";
+        ctx.font = "900 24px system-ui, -apple-system, Noto Sans JP";
+        ctx.fillText("ありがとう♡ またきてね😊", 72, H-78);
+
+        const url = canvas.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${shopName}_receipt.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        showToast("📸 レシート画像を保存したよ！");
+        clerkSay("写真で保存できたよ📸", "😊");
+      }
+
+      function roundRect(ctx, x, y, w, h, r){
+        const rr = Math.min(r, w/2, h/2);
+        ctx.beginPath();
+        ctx.moveTo(x+rr, y);
+        ctx.arcTo(x+w, y, x+w, y+h, rr);
+        ctx.arcTo(x+w, y+h, x, y+h, rr);
+        ctx.arcTo(x, y+h, x, y, rr);
+        ctx.arcTo(x, y, x+w, y, rr);
+        ctx.closePath();
+      }
+
+      function addReceiptSaveButtonHandler(){
+        saveReceiptImgBtn.addEventListener("click", ()=>{
+          sfxTap();
+          makeReceiptPng();
+        });
+      }
+
+      function initSoundUnlock(){
+        document.addEventListener("pointerdown", ()=>{
+          try{
+            if(soundOn) ensureAudio();
+            if("speechSynthesis" in window){
+              const u = new SpeechSynthesisUtterance("");
+              u.lang = "ja-JP";
+              window.speechSynthesis.speak(u);
+              window.speechSynthesis.cancel();
+            }
+          }catch(e){}
+        }, {once:true});
+      }
+
+      function initSettings(){
+        settingsBtn.addEventListener("click", ()=>{ sfxTap(); openSettings(); });
+        closeSettings.addEventListener("click", ()=>{ sfxTap(); closeSettingsModal(); });
+        modalBack.addEventListener("click", (e)=>{
+          if(e.target === modalBack){ sfxTap(); closeSettingsModal(); }
+        });
+
+        themePista.addEventListener("click", ()=>{ sfxTap(); applyTheme("pista"); });
+        themePink.addEventListener("click", ()=>{ sfxTap(); applyTheme("pink"); });
+        themePurple.addEventListener("click", ()=>{ sfxTap(); applyTheme("purple"); });
+
+        saveSettings.addEventListener("click", ()=>{
+          sfxGood();
+          applyShopName(shopNameInput.value || "RinCafe");
+          applyBuyerName(buyerNameInput.value || "むぎちゃん");
+          saveSettingsToStore();
+          closeSettingsModal();
+          clerkSay("せってい ほぞんしたよ✨", "😊");
+          showToast("せっていを ほぞんしたよ✨");
+          renderAll();
+        });
+
+        soundBtn.addEventListener("click", ()=>{
+          soundOn = !soundOn;
+          soundBtn.textContent = soundOn ? "おと ON" : "おと OFF";
+          if(soundOn){
+            sfxGood();
+            clerkSay("おと つけたよ🔊", "😊");
+            showToast("おと を つけたよ🔊");
+          }else{
+            clerkSay("しずかモード🤫", "🙂");
+            showToast("おと を けしたよ🤫");
+          }
+        });
+      }
+
+      function loadAll(){
+        const s = loadSettings();
+        applyShopName(s.shopName);
+        applyBuyerName(s.buyerName);
+        applyTheme(s.themeKey);
+        loadState();
+      }
+
+      function renderStampGridInit(){
+        stampGrid.innerHTML = "";
+        for(let i=0;i<10;i++){
+          const d = document.createElement("div");
+          d.className = "stamp";
+          d.textContent = "○";
+          stampGrid.appendChild(d);
+        }
+      }
+
+      function buildHandlers(){
+        coin100.addEventListener("click", ()=> addCash(100));
+        coin500.addEventListener("click", ()=> addCash(500));
+        cashClear.addEventListener("click", cashBack);
+
+        checkoutBtn.addEventListener("click", checkout);
+        newBtn.addEventListener("click", ()=>{ sfxTap(); newCustomer(); });
+        resetBtn.addEventListener("click", ()=>{ sfxTap(); clearTray(); });
+        dailyResetBtn.addEventListener("click", dailyReset);
+      }
+
+      function start(){
+        loadAll();
+        renderStampGridInit();
+        renderMenu();
+        addReceiptSaveButtonHandler();
+        initSettings();
+        initSoundUnlock();
+        buildHandlers();
+        newCustomer();
+        renderAll();
+      }
+
+      start();
+    })();
+  </script>
+</body>
+</html>
